@@ -1,7 +1,13 @@
 package model;
 
-public class Player {
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
+public class Player implements Serializable{
+
+	
+	private static final long serialVersionUID = -7824713675325483939L;
 	private String username;
 	private int score;
 	private int numberOfTakenCards;
@@ -9,6 +15,7 @@ public class Player {
 	private boolean isDealer;
 	private boolean onMove;
 	private String host;
+	private List<Card> cardsInHand;
 
 	public Player(String username, String host, boolean isDealer, boolean onMove) {
 		this.username = username;
@@ -18,6 +25,7 @@ public class Player {
 		this.isDealer = isDealer;
 		this.host = host;
 		this.onMove = onMove;
+		cardsInHand = new LinkedList<>();
 	}
 
 	public String getHost() {
@@ -74,5 +82,13 @@ public class Player {
 
 	public void setDealer(boolean isDealer) {
 		this.isDealer = isDealer;
+	}
+
+	public List<Card> getCardsInHand() {
+		return cardsInHand;
+	}
+
+	public void setCardsInHand(List<Card> cardsInHand) {
+		this.cardsInHand = cardsInHand;
 	}
 }

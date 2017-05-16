@@ -1,6 +1,10 @@
 package model;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable{
+	
+	private static final long serialVersionUID = -7824713675325483939L;
 	private int value;
 	private int cardNumber;
 	private boolean stih;

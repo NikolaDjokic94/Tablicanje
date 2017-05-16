@@ -6,6 +6,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 import main.GameBoard;
+import model.Card;
 import model.CardButton;
 
 public class PlayerImplementation extends UnicastRemoteObject implements IPlayer {
@@ -17,16 +18,6 @@ public class PlayerImplementation extends UnicastRemoteObject implements IPlayer
 	public PlayerImplementation(GameBoard gb) throws RemoteException {
 		this.gb = gb;
 	}
-
-	/*@Override
-	public void primiPotez(final int odPolje, final int doPolje, int brPreskocenog, boolean zavrsenPotez) throws RemoteException {
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				chr.primiPotez(odPolje, doPolje, brPreskocenog, zavrsenPotez);
-			}
-		});
-	}*/
 	
 	@Override
 	public void connectionLost() throws RemoteException {
@@ -39,14 +30,22 @@ public class PlayerImplementation extends UnicastRemoteObject implements IPlayer
 	}
 
 	@Override
-	public void primiPotez(List<CardButton> cards, boolean zavrsenPotez, int points) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+	public void receiveMove(List<CardButton> cards, int score, int tables, boolean addedOnTable, boolean endOfMove) throws RemoteException {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				gb.reciveMove(cards, score, tables, addedOnTable, endOfMove);
+			}
+		});
 	}
 
 	@Override
-	public void newDeal(List<CardButton> handCards, List<CardButton> tableCards) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+	public void newDeal(List<Card> handCards, List<Card> tableCards, String username) throws RemoteException {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				gb.recieveDeal(handCards, tableCards, username);
+			}
+		});
 	}
 }

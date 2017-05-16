@@ -1,24 +1,22 @@
 package main;
 
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import model.Player;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 @SuppressWarnings("serial")
 public class LoginScreen extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField usernameField;
+	private JTextField registryField;
 
 	/**
 	 * Launch the application.
@@ -42,24 +40,35 @@ public class LoginScreen extends JFrame {
 	public LoginScreen() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 489, 137);
+		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JLabel lblEnterYourUsername = new JLabel("Enter your username:");
-		lblEnterYourUsername.setBounds(10, 36, 147, 14);
+		lblEnterYourUsername.setBounds(20, 11, 147, 14);
 		contentPane.add(lblEnterYourUsername);
 		
-		textField = new JTextField();
-		textField.setBounds(167, 33, 296, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		usernameField = new JTextField();
+		usernameField.setBounds(167, 11, 296, 20);
+		contentPane.add(usernameField);
+		usernameField.setColumns(10);
+		
+		JLabel lblHostOfThe = new JLabel("Host of the RMI registry holding the User DB?");
+		lblHostOfThe.setBounds(20, 41, 443, 14);
+		contentPane.add(lblHostOfThe);
+		
+		registryField = new JTextField();
+		registryField.setColumns(10);
+		registryField.setBounds(104, 66, 202, 20);
+		registryField.setText("localhost");
+		contentPane.add(registryField);
 		
 		JButton btnConfirm = new JButton("Confirm");
 		btnConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				GameBoard gb = new GameBoard(textField.getText());
+				GameBoard gb = new GameBoard(usernameField.getText(), registryField.getText());
 				gb.setVisible(true);
 				dispose();
 			}
