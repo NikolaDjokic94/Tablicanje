@@ -62,10 +62,6 @@ public class Player implements Serializable{
 		this.tableCounter++;
 	}
 	
-	public void decrementTableCounter() {
-		this.tableCounter--;
-	}
-
 	public int getNumberOfCardsInHand() {
 		return numberOfCardsInHand;
 	}

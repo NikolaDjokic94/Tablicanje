@@ -65,6 +65,7 @@ public class GameBoard extends JFrame {
 	private List<Card> cardsInPlayer2Hand;
 	private boolean isDeckEmpty;
 	private int counterForDeal;
+	private boolean endOfGame;
 
 	private ServerDb serverDb;
 
@@ -122,6 +123,7 @@ public class GameBoard extends JFrame {
 				}
 			}
 		});
+		endOfGame = false;
 		frame = this;
 		counterForDeal = 6;
 		lastTook = false;
@@ -139,7 +141,7 @@ public class GameBoard extends JFrame {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setMinimumSize(new Dimension(700, 820));
 		contentPane = new JPanel();
-		
+
 		contentPane.setBackground(new Color(34, 139, 34));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -250,34 +252,24 @@ public class GameBoard extends JFrame {
 		gbl_rightCenter.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
 		gbl_rightCenter.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		rightCenter.setLayout(gbl_rightCenter);
-		
-		/*if (onMove && bot.getComponentCount() != 0) {
-		Timer timer = new Timer(30000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				int cardsInHand = bot.getComponentCount();
-				Random rand = new Random();
-				int randomNumber = rand.nextInt(cardsInHand - 1);
-				CardButton randomCard = (CardButton) bot.getComponent(randomNumber);
-				randomCard.getCard().setPlayerCard(false);
-				randomCard.setSelected(false);
-				playerCardsGroup.remove(randomCard);
-				cardsOnTable.add(randomCard.getCard());
-				sendMove(cardsOnTable, player.getScore(), player.getTableCounter(), true);
-				bot.remove(randomCard);
-				if (counter % 2 == 0) {
-					midPlayableTop.add(setCard(randomCard.getCard()));
-					counter++;
-				} else {
-					midPlayableBot.add(setCard(randomCard.getCard()));
-					counter++;
-				}
-				repaint();
-				revalidate();
-			}
-		});
-		timer.setRepeats(true);
-		}*/
+
+		/*
+		 * if (onMove && bot.getComponentCount() != 0) { Timer timer = new
+		 * Timer(30000, new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent arg0) { int
+		 * cardsInHand = bot.getComponentCount(); Random rand = new Random();
+		 * int randomNumber = rand.nextInt(cardsInHand - 1); CardButton
+		 * randomCard = (CardButton) bot.getComponent(randomNumber);
+		 * randomCard.getCard().setPlayerCard(false);
+		 * randomCard.setSelected(false); playerCardsGroup.remove(randomCard);
+		 * cardsOnTable.add(randomCard.getCard()); sendMove(cardsOnTable,
+		 * player.getScore(), player.getTableCounter(), true);
+		 * bot.remove(randomCard); if (counter % 2 == 0) {
+		 * midPlayableTop.add(setCard(randomCard.getCard())); counter++; } else
+		 * { midPlayableBot.add(setCard(randomCard.getCard())); counter++; }
+		 * repaint(); revalidate(); } }); timer.setRepeats(true); }
+		 */
 		JButton deck = new JButton("");
 		GridBagConstraints gbc_deck = new GridBagConstraints();
 		gbc_deck.gridwidth = 0;
@@ -291,39 +283,41 @@ public class GameBoard extends JFrame {
 		deck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (isDealer) {
-					if(cardDeck.getDeck().isEmpty()) {
-						if(counterForDeal > 0 || player.getScore() < 101) {
+					if (cardDeck.getDeck().isEmpty()) {
+						if (counterForDeal > 0 || endOfGame) {
+							JOptionPane.showMessageDialog(frame, "Deljenje novog spila, opet drugi igrac deli!");
 							top.removeAll();
 							cardDeck = new Deck();
-							isStart=true;
+							isStart = true;
 							midPlayableTop.removeAll();
 							midPlayableBot.removeAll();
 							cardsOnTable.clear();
 							counterForDeal--;
+							player.setNumberOfTakenCards(0);
 						} else {
-							JOptionPane.showMessageDialog(frame, "Kraj igre!");
+							JOptionPane.showMessageDialog(frame, "Kraj igre! Nismo napravili logiku za odredjivanje pobednika!");
 							return;
 						}
 					}
 					dealCards();
 				}
-				//timer.start();
+				// timer.start();
 			}
 		});
 		deck.setMinimumSize(new Dimension(20, 9));
 		deck.setMaximumSize(new Dimension(20, 9));
-		
+
 		left = new JPanel();
 		left.setAlignmentX(Component.LEFT_ALIGNMENT);
 		left.setAlignmentY(Component.TOP_ALIGNMENT);
 		left.setBackground(new Color(34, 139, 34));
 		contentPane.add(left, BorderLayout.WEST);
 		left.setLayout(new BorderLayout(0, 0));
-		
+
 		leftTopPanel = new JPanel();
 		leftTopPanel.setBackground(new Color(34, 139, 34));
 		left.add(leftTopPanel, BorderLayout.NORTH);
-		
+
 		leftTopLabel = new JLabel("");
 		leftTopLabel.setBackground(new Color(34, 139, 34));
 		leftTopLabel.setIcon(resize("Cards/Deck.png", 80, 120));
@@ -331,22 +325,22 @@ public class GameBoard extends JFrame {
 		leftTopLabel.setMaximumSize(new Dimension(20, 9));
 		leftTopLabel.setVisible(false);
 		leftTopPanel.add(leftTopLabel);
-		
+
 		leftMidPanel = new JPanel();
 		leftMidPanel.setBackground(new Color(34, 139, 34));
 		left.add(leftMidPanel, BorderLayout.CENTER);
 		leftMidPanel.setLayout(new BoxLayout(leftMidPanel, BoxLayout.X_AXIS));
-		
+
 		lblPlayerOnMove = new JLabel("");
 		lblPlayerOnMove.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		lblPlayerOnMove.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPlayerOnMove.setBackground(new Color(34, 139, 34));
 		leftMidPanel.add(lblPlayerOnMove);
-		
+
 		leftBotPanel = new JPanel();
 		leftBotPanel.setBackground(new Color(34, 139, 34));
 		left.add(leftBotPanel, BorderLayout.SOUTH);
-		
+
 		leftBotLabel = new JLabel("");
 		leftBotLabel.setBackground(new Color(34, 139, 34));
 		leftBotLabel.setIcon(resize("Cards/Deck.png", 80, 120));
@@ -354,10 +348,9 @@ public class GameBoard extends JFrame {
 		leftBotLabel.setMaximumSize(new Dimension(20, 9));
 		leftBotLabel.setVisible(false);
 		leftBotPanel.add(leftBotLabel);
-		if(isDealer) {
+		if (isDealer) {
 			lblPlayerOnMove.setText("<html>Click on deck<br>to deal cards!</html>");
-		}
-		else {
+		} else {
 			lblPlayerOnMove.setText("<html>Wait for opponent<br>to deal cards!</html>");
 		}
 		/*
@@ -443,7 +436,7 @@ public class GameBoard extends JFrame {
 	}
 
 	private void enemyCards() {
-		if(top.getComponentCount() == 0) {
+		if (top.getComponentCount() == 0) {
 			for (int i = 0; i < NUMBER_OF_CARDS_TO_DEAL / 2; i++) {
 				JLabel enemyCard = new JLabel("");
 				enemyCard.setBackground(new Color(34, 139, 34));
@@ -457,7 +450,7 @@ public class GameBoard extends JFrame {
 
 	public void recieveDeal(List<Card> handCards, List<Card> tableCards, String username) {
 		lblPlayerOnMove.setText("<html>You are<br>on move!</html>");
-		if(isStart) {
+		if (isStart) {
 			midPlayableTop.removeAll();
 			midPlayableBot.removeAll();
 			bot.removeAll();
@@ -498,7 +491,7 @@ public class GameBoard extends JFrame {
 			p.receiveMove(cards, score, tables, player.getNumberOfCardsInHand(), lastTook, endOfDeck);
 
 			if (endOfDeck) {
-				
+
 			}
 			onMove = false;
 		} catch (RemoteException | NotBoundException ex) {
@@ -506,21 +499,19 @@ public class GameBoard extends JFrame {
 		}
 	}
 
-	public void reciveMove(List<Card> cards, int score, int tables, int numberOfCardsInEnemyHand, boolean lastTook, boolean endOfDeck) {
+	public void reciveMove(List<Card> cards, int score, int tables, int numberOfCardsInEnemyHand, boolean lastTook,
+			boolean endOfDeck) {
 		lblPlayerOnMove.setText("<html>You are<br>on move!</html>");
 		int myScore = 0;
 		isDeckEmpty = endOfDeck;
-		/*if(lastTook) {
-			this.lastTook = false;
-			if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0 && endOfDeck) {
-				midPlayableTop.removeAll();
-				midPlayableBot.removeAll();
-				if(player.getNumberOfTakenCards() > 26)
-					player.setScore(player.getScore() + 3);
-				this.isDealer = this.isDealer ? false : true;
-				isStart = true;
-			}
-		}*/
+		/*
+		 * if(lastTook) { this.lastTook = false;
+		 * if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand
+		 * == 0 && endOfDeck) { midPlayableTop.removeAll();
+		 * midPlayableBot.removeAll(); if(player.getNumberOfTakenCards() > 26)
+		 * player.setScore(player.getScore() + 3); this.isDealer = this.isDealer
+		 * ? false : true; isStart = true; } }
+		 */
 		if (top.getComponentCount() != 0) {
 			top.remove(0);
 		}
@@ -539,50 +530,47 @@ public class GameBoard extends JFrame {
 				}
 			}
 		}
-		
-		if(this.player.getNumberOfTakenCards() > 0) {
+
+		if (this.player.getNumberOfTakenCards() > 0) {
 			leftTopLabel.setVisible(true);
 		}
 		scoreTop.setText("Score: " + score);
 		tableTop.setText("Tables: " + tables);
 
 		if (endOfDeck) {
-			if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0) {
+			if (player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0) {
 				midPlayableTop.removeAll();
 				midPlayableBot.removeAll();
 				player.setScore(player.getScore() + myScore);
-				if(player.getTableCounter() != 0) {
-					player.decrementTableCounter();
-				}
 				player.setNumberOfTakenCards(player.getNumberOfTakenCards() + cards.size());
-				if(player.getNumberOfTakenCards() > 26) {
+				if (player.getNumberOfTakenCards() > 26) {
 					player.setScore(player.getScore() + 3);
 				}
 				scoreBot.setText("Score: " + player.getScore());
 				tableBot.setText("Tables: " + player.getTableCounter());
 				isStart = true;
 				cardsOnTable.clear();
+				player.setNumberOfTakenCards(0);
 			}
 			/*
-			if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0) {
-				if(this.lastTook) {
-					player.setScore(player.getScore() + myScore);
-					player.decrementTableCounter();
-					player.setNumberOfTakenCards(player.getNumberOfTakenCards() + cards.size());
-					if(player.getNumberOfTakenCards() > 26)
-						player.setScore(player.getScore() + 3);
-					scoreBot.setText("Score: " + player.getScore());
-					tableBot.setText("Tables: " + player.getTableCounter());
-					midPlayableTop.removeAll();
-					midPlayableBot.removeAll();
-					this.isDealer = this.isDealer ? false : true;
-					isStart = true;
-					cardsOnTable.clear();
-				} else {
-					sendMove(cardsOnTable, player.getScore(), player.getTableCounter(), this.lastTook, isDeckEmpty);
-				}
-			}
-			*/
+			 * if(player.getNumberOfCardsInHand() == 0 &&
+			 * numberOfCardsInEnemyHand == 0) { if(this.lastTook) {
+			 * player.setScore(player.getScore() + myScore);
+			 * player.decrementTableCounter();
+			 * player.setNumberOfTakenCards(player.getNumberOfTakenCards() +
+			 * cards.size()); if(player.getNumberOfTakenCards() > 26)
+			 * player.setScore(player.getScore() + 3);
+			 * scoreBot.setText("Score: " + player.getScore());
+			 * tableBot.setText("Tables: " + player.getTableCounter());
+			 * midPlayableTop.removeAll(); midPlayableBot.removeAll();
+			 * this.isDealer = this.isDealer ? false : true; isStart = true;
+			 * cardsOnTable.clear(); } else { sendMove(cardsOnTable,
+			 * player.getScore(), player.getTableCounter(), this.lastTook,
+			 * isDeckEmpty); } }
+			 */
+		}
+		if(score > 101 || player.getScore() > 101) {
+			endOfGame = true;
 		}
 		onMove = true;
 		repaint();
@@ -599,7 +587,7 @@ public class GameBoard extends JFrame {
 		cardButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				if (onMove) {
-					if(isDealer)
+					if (isDealer)
 						isDeckEmpty = cardDeck.getDeck().isEmpty() ? true : false;
 					CardButton buttonPressed = (CardButton) event.getSource();
 					CardButton result = null;
@@ -697,11 +685,17 @@ public class GameBoard extends JFrame {
 							bot.remove(result);
 							top.remove(result);
 							scoreBot.setText("Score: " + player.getScore());
+							if(player.getNumberOfTakenCards() > 26) {
+								player.setScore(player.getScore() + 3);
+							}
 							if (midPlayableTop.getComponentCount() == 0 && midPlayableBot.getComponentCount() == 0) {
-								if(top.getComponentCount() != 0 || !cardDeck.getDeck().isEmpty()) {
+								if (top.getComponentCount() != 0 || !cardDeck.getDeck().isEmpty()) {
 									player.incrementTableCounter();
 									tableBot.setText("Table: " + player.getTableCounter());
 								}
+							}
+							if(player.getScore() > 101) {
+								endOfGame = true;
 							}
 						} else {
 							for (CardButton card : posibleCardCombinations) {
