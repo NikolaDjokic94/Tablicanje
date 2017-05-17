@@ -12,20 +12,16 @@ public class Player implements Serializable{
 	private int score;
 	private int numberOfTakenCards;
 	private int tableCounter;
-	private boolean isDealer;
-	private boolean onMove;
 	private String host;
-	private List<Card> cardsInHand;
+	private int numberOfCardsInHand;
 
 	public Player(String username, String host, boolean isDealer, boolean onMove) {
 		this.username = username;
 		this.score = 0;
 		this.numberOfTakenCards = 0;
 		this.tableCounter = 0;
-		this.isDealer = isDealer;
 		this.host = host;
-		this.onMove = onMove;
-		cardsInHand = new LinkedList<>();
+		this.numberOfCardsInHand = 0;
 	}
 
 	public String getHost() {
@@ -34,14 +30,6 @@ public class Player implements Serializable{
 
 	public void setHost(String host) {
 		this.host = host;
-	}
-	
-	public boolean isOnMove() {
-		return onMove;
-	}
-
-	public void setOnMove(boolean onMove) {
-		this.onMove = onMove;
 	}
 
 	public String getUsername() {
@@ -75,20 +63,16 @@ public class Player implements Serializable{
 	public void incrementTableCounter() {
 		this.tableCounter++;
 	}
-
-	public boolean isDealer() {
-		return isDealer;
+	
+	public void decrementTableCounter() {
+		this.tableCounter--;
 	}
 
-	public void setDealer(boolean isDealer) {
-		this.isDealer = isDealer;
+	public int getNumberOfCardsInHand() {
+		return numberOfCardsInHand;
 	}
 
-	public List<Card> getCardsInHand() {
-		return cardsInHand;
-	}
-
-	public void setCardsInHand(List<Card> cardsInHand) {
-		this.cardsInHand = cardsInHand;
+	public void setNumberOfCardsInHand(int numberOfCardsInHand) {
+		this.numberOfCardsInHand = numberOfCardsInHand;
 	}
 }

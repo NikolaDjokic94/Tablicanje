@@ -30,11 +30,11 @@ public class PlayerImplementation extends UnicastRemoteObject implements IPlayer
 	}
 
 	@Override
-	public void receiveMove(List<CardButton> cards, int score, int tables, boolean addedOnTable, boolean endOfMove) throws RemoteException {
+	public void receiveMove(List<Card> cards, int score, int tables, int numberOfCardsInEnemyHand, boolean lastTook, boolean endOfDeck) throws RemoteException {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				gb.reciveMove(cards, score, tables, addedOnTable, endOfMove);
+				gb.reciveMove(cards, score, tables, numberOfCardsInEnemyHand, lastTook, endOfDeck);
 			}
 		});
 	}
