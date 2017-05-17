@@ -7,7 +7,6 @@ import java.util.List;
 
 import main.GameBoard;
 import model.Card;
-import model.CardButton;
 
 public class PlayerImplementation extends UnicastRemoteObject implements IPlayer {
 

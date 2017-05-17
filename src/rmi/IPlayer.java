@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import model.Card;
-import model.CardButton;
 
 
 public interface IPlayer extends Remote {

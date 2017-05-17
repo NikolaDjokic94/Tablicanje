@@ -1,13 +1,12 @@
 package main;
 
-import static java.lang.System.out;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -65,6 +64,7 @@ public class GameBoard extends JFrame {
 	private List<Card> cardsOnTable;
 	private List<Card> cardsInPlayer2Hand;
 	private boolean isDeckEmpty;
+	private int counterForDeal;
 
 	private ServerDb serverDb;
 
@@ -90,6 +90,7 @@ public class GameBoard extends JFrame {
 	private JLabel leftTopLabel;
 	private JLabel leftBotLabel;
 	private JLabel lblPlayerOnMove;
+	private Frame frame;
 
 	/*
 	 * public static void main(String[] args) { EventQueue.invokeLater(new
@@ -121,6 +122,8 @@ public class GameBoard extends JFrame {
 				}
 			}
 		});
+		frame = this;
+		counterForDeal = 6;
 		lastTook = false;
 		isStart = true;
 		cardDeck = new Deck();
@@ -145,6 +148,7 @@ public class GameBoard extends JFrame {
 		// >>>>>> TOP PANEL <<<<<<
 
 		top = new JPanel();
+		top.setPreferredSize(new Dimension(80, 130));
 		top.setAlignmentY(Component.TOP_ALIGNMENT);
 		top.setAlignmentX(Component.LEFT_ALIGNMENT);
 		top.setBackground(new Color(34, 139, 34));
@@ -161,6 +165,7 @@ public class GameBoard extends JFrame {
 
 		bot = new JPanel();
 		bot.setBackground(new Color(34, 139, 34));
+		bot.setPreferredSize(new Dimension(80, 130));
 		contentPane.add(bot, BorderLayout.SOUTH);
 
 		// >>>>>> MID PANEL <<<<<<
@@ -287,9 +292,18 @@ public class GameBoard extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (isDealer) {
 					if(cardDeck.getDeck().isEmpty()) {
-						top.removeAll();
-						cardDeck = new Deck();
-						isStart=true;
+						if(counterForDeal > 0 || player.getScore() < 101) {
+							top.removeAll();
+							cardDeck = new Deck();
+							isStart=true;
+							midPlayableTop.removeAll();
+							midPlayableBot.removeAll();
+							cardsOnTable.clear();
+							counterForDeal--;
+						} else {
+							JOptionPane.showMessageDialog(frame, "Kraj igre!");
+							return;
+						}
 					}
 					dealCards();
 				}
@@ -341,10 +355,10 @@ public class GameBoard extends JFrame {
 		leftBotLabel.setVisible(false);
 		leftBotPanel.add(leftBotLabel);
 		if(isDealer) {
-			lblPlayerOnMove.setText("Click on deck to deal cards!");
+			lblPlayerOnMove.setText("<html>Click on deck<br>to deal cards!</html>");
 		}
 		else {
-			lblPlayerOnMove.setText("Wait for opponent to deal cards!");
+			lblPlayerOnMove.setText("<html>Wait for opponent<br>to deal cards!</html>");
 		}
 		/*
 		 * new java.util.Timer().schedule(new java.util.TimerTask() {
@@ -377,7 +391,6 @@ public class GameBoard extends JFrame {
 			cardDeck.shuffleDeck();
 			int sizeOfDeck = cardDeck.getDeck().size();
 			if (isStart) {
-				
 				for (int i = sizeOfDeck - 1; i >= sizeOfDeck - NUMBER_OF_CARDS_ON_TALON; i--) {
 					cardDeck.getDeck().get(i).setPlayerCard(false);
 					cardsOnTable.add(cardDeck.getDeck().get(i));
@@ -422,7 +435,7 @@ public class GameBoard extends JFrame {
 					JOptionPane.showMessageDialog(this, "Greska pri slanju!", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
-			lblPlayerOnMove.setText("Opponent is on move!");
+			lblPlayerOnMove.setText("<html>Opponent is<br>on move!</html>");
 			enemyCards();
 			repaint();
 			revalidate();
@@ -443,7 +456,13 @@ public class GameBoard extends JFrame {
 	}
 
 	public void recieveDeal(List<Card> handCards, List<Card> tableCards, String username) {
-		lblPlayerOnMove.setText("You are on move!");
+		lblPlayerOnMove.setText("<html>You are<br>on move!</html>");
+		if(isStart) {
+			midPlayableTop.removeAll();
+			midPlayableBot.removeAll();
+			bot.removeAll();
+			top.removeAll();
+		}
 		for (Card card : handCards) {
 			CardButton current = setCard(card);
 			playerCardsGroup.add(current);
@@ -473,7 +492,7 @@ public class GameBoard extends JFrame {
 
 	public void sendMove(List<Card> cards, int score, int tables, boolean lastTook, boolean endOfDeck) {
 		try {
-			lblPlayerOnMove.setText("Opponent is on move!");
+			lblPlayerOnMove.setText("<html>Opponent is<br>on move!</html>");
 			IPlayer p = getPlayer(isDealer ? serverDb.getPlayer1() : serverDb.getPlayer2());
 			player.setNumberOfCardsInHand(player.getNumberOfCardsInHand() - 1);
 			p.receiveMove(cards, score, tables, player.getNumberOfCardsInHand(), lastTook, endOfDeck);
@@ -488,10 +507,10 @@ public class GameBoard extends JFrame {
 	}
 
 	public void reciveMove(List<Card> cards, int score, int tables, int numberOfCardsInEnemyHand, boolean lastTook, boolean endOfDeck) {
-		lblPlayerOnMove.setText("You are on move!");
+		lblPlayerOnMove.setText("<html>You are<br>on move!</html>");
 		int myScore = 0;
 		isDeckEmpty = endOfDeck;
-		if(lastTook) {
+		/*if(lastTook) {
 			this.lastTook = false;
 			if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0 && endOfDeck) {
 				midPlayableTop.removeAll();
@@ -501,7 +520,7 @@ public class GameBoard extends JFrame {
 				this.isDealer = this.isDealer ? false : true;
 				isStart = true;
 			}
-		}
+		}*/
 		if (top.getComponentCount() != 0) {
 			top.remove(0);
 		}
@@ -521,12 +540,30 @@ public class GameBoard extends JFrame {
 			}
 		}
 		
-		if(player.getNumberOfTakenCards() > 0) {
+		if(this.player.getNumberOfTakenCards() > 0) {
 			leftTopLabel.setVisible(true);
 		}
 		scoreTop.setText("Score: " + score);
 		tableTop.setText("Tables: " + tables);
+
 		if (endOfDeck) {
+			if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0) {
+				midPlayableTop.removeAll();
+				midPlayableBot.removeAll();
+				player.setScore(player.getScore() + myScore);
+				if(player.getTableCounter() != 0) {
+					player.decrementTableCounter();
+				}
+				player.setNumberOfTakenCards(player.getNumberOfTakenCards() + cards.size());
+				if(player.getNumberOfTakenCards() > 26) {
+					player.setScore(player.getScore() + 3);
+				}
+				scoreBot.setText("Score: " + player.getScore());
+				tableBot.setText("Tables: " + player.getTableCounter());
+				isStart = true;
+				cardsOnTable.clear();
+			}
+			/*
 			if(player.getNumberOfCardsInHand() == 0 && numberOfCardsInEnemyHand == 0) {
 				if(this.lastTook) {
 					player.setScore(player.getScore() + myScore);
@@ -545,6 +582,7 @@ public class GameBoard extends JFrame {
 					sendMove(cardsOnTable, player.getScore(), player.getTableCounter(), this.lastTook, isDeckEmpty);
 				}
 			}
+			*/
 		}
 		onMove = true;
 		repaint();

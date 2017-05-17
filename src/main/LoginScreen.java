@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import java.awt.Font;
 
 @SuppressWarnings("serial")
 public class LoginScreen extends JFrame {
@@ -39,7 +40,7 @@ public class LoginScreen extends JFrame {
 	 */
 	public LoginScreen() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 489, 137);
+		setBounds(100, 100, 726, 287);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -51,7 +52,7 @@ public class LoginScreen extends JFrame {
 		contentPane.add(lblEnterYourUsername);
 		
 		usernameField = new JTextField();
-		usernameField.setBounds(167, 11, 296, 20);
+		usernameField.setBounds(364, 11, 313, 20);
 		contentPane.add(usernameField);
 		usernameField.setColumns(10);
 		
@@ -61,7 +62,7 @@ public class LoginScreen extends JFrame {
 		
 		registryField = new JTextField();
 		registryField.setColumns(10);
-		registryField.setBounds(104, 66, 202, 20);
+		registryField.setBounds(364, 38, 313, 20);
 		registryField.setText("localhost");
 		contentPane.add(registryField);
 		
@@ -73,7 +74,12 @@ public class LoginScreen extends JFrame {
 				dispose();
 			}
 		});
-		btnConfirm.setBounds(374, 64, 89, 23);
+		btnConfirm.setBounds(621, 224, 89, 23);
 		contentPane.add(btnConfirm);
+		
+		JLabel lblRullesOfThe = new JLabel("<html>Rulles of the game: If you want to put card ond table click two times on card in hand,<br> if u want to take cards from table first click on cards on table then on card in your hand. <br> If you are first player wait for the second player to join and deal the cards, second will always deal the cards.</html>");
+		lblRullesOfThe.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		lblRullesOfThe.setBounds(20, 78, 690, 135);
+		contentPane.add(lblRullesOfThe);
 	}
 }
